@@ -1,0 +1,136 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+ <meta charset="UTF-8"> 
+ <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+ <title>Expense Tracker</title> 
+ <style> 
+ body { 
+ font-family: 'Times New Roman', serif; 
+ margin: 0; 
+ padding: 0; 
+ background-color: #2E4053 ; 
+ color: #fff; 
+ } 
+ header { 
+ background-color: #2C3E50; 
+ color: #fff; 
+ text-align: center; 
+ padding: 1em; 
+ font-size: 20px; 
+ } 
+ main { 
+ max-width: 600px; 
+ margin: 20px auto; 
+ padding: 20px; 
+ background-color: #000; 
+ box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); 
+ border-radius: 8px; 
+ font-size: 16px; 
+ } 
+ h2 { 
+ color: #fff; 
+ } 
+ form { 
+ display: flex; 
+ justify-content: space-between; 
+ margin-bottom: 20px; 
+ } 
+ input { 
+ flex: 2; 
+ padding: 8px; 
+ } 
+ button { 
+ flex: 1; 
+ padding: 8px; 
+ cursor: pointer; 
+ } 
+ ul { 
+ list-style-type: none; 
+ padding: 0; 
+ } 
+ li { 
+ display: flex; 
+ justify-content: space-between; 
+ border-bottom: 1px solid #ddd; 
+ padding: 10px; 
+ } 
+ button.delete { 
+ background-color: #dc3545; 
+ color: #fff; 
+ border: none; 
+ padding: 6px 12px; 
+ cursor: pointer; 
+ } 
+ #total { 
+ margin-top: 10px; 
+ font-size: 18px; 
+ } 
+ </style> 
+</head> 
+<body> 
+ <header> 
+ <h1>Expenses Spent in This Month</h1> 
+ </header> 
+ <main> 
+ <h2>Add Expense</h2> 
+ <form id="expenseForm"> 
+ <input type="text" id="description" placeholder="Description" 
+required> 
+ <input type="number" id="amount" placeholder="Amount" required> 
+ <button type="submit">Add</button> 
+ </form> 
+ <h2>Expense List</h2> 
+ <ul id="expenseList"></ul> 
+ <div id="total"> 
+ Total Money: ₹<span id="totalAmount">0.00</span> 
+ </div> 
+ </main> 
+ <script> 
+ document.addEventListener('DOMContentLoaded', function() { 
+ const expenseForm = document.getElementById('expenseForm'); 
+ const descriptionInput = document.getElementById('description'); 
+ const amountInput = document.getElementById('amount'); 
+ const expenseList = document.getElementById('expenseList'); 
+ const totalAmountSpan = document.getElementById('totalAmount'); 
+ const savedExpenses = JSON.parse(localStorage.getItem('expenses')) || 
+[]; 
+ renderExpenses(savedExpenses); 
+ expenseForm.addEventListener('submit', function(event) { 
+ event.preventDefault(); 
+ const description = descriptionInput.value.trim(); 
+ const amount = parseFloat(amountInput.value); 
+ if (description && !isNaN(amount)) { 
+ const newExpense = { description, amount }; 
+ savedExpenses.push(newExpense);  
+ localStorage.setItem('expenses', JSON.stringify(savedExpenses)); 
+ renderExpenses(savedExpenses); 
+ descriptionInput.value = ''; 
+ amountInput.value = ''; 
+ } 
+ }); 
+ function renderExpenses(expenses) { 
+ expenseList.innerHTML = ''; 
+ let totalAmount = 0; 
+ expenses.forEach((expense, index) => { 
+ totalAmount += expense.amount; 
+ const listItem = document.createElement('li'); 
+ listItem.innerHTML = ` 
+ <span>${index + 1}. ${expense.description}</span> 
+ <span>₹${expense.amount.toFixed(2)}</span> 
+ <button class="delete" onclick="deleteExpense($
+{index})">Delete</button> 
+ `; 
+ expenseList.appendChild(listItem); 
+ }); 
+ totalAmountSpan.textContent = totalAmount.toFixed(2); 
+ } 
+ window.deleteExpense = function(index) { 
+ savedExpenses.splice(index, 1); 
+ localStorage.setItem('expenses', JSON.stringify(savedExpenses)); 
+ renderExpenses(savedExpenses); 
+ }; 
+ }); 
+ </script> 
+</body> 
+</html>
